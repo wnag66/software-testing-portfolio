@@ -1,6 +1,7 @@
 package com.wnag66.ui.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
 public class LoginPage extends BasePage {
@@ -23,7 +24,7 @@ public class LoginPage extends BasePage {
     public InventoryPage loginAs(String username, String password) {
         type(USERNAME, username);
         type(PASSWORD, password);
-        click(LOGIN_BUTTON);
+        submitForm();
         waitForUrl("inventory.html");
         return new InventoryPage(driver);
     }
@@ -31,7 +32,7 @@ public class LoginPage extends BasePage {
     public LoginPage submitInvalidCredentials(String username, String password) {
         type(USERNAME, username);
         type(PASSWORD, password);
-        click(LOGIN_BUTTON);
+        submitForm();
         visible(ERROR);
         return this;
     }
@@ -39,5 +40,10 @@ public class LoginPage extends BasePage {
     public String errorMessage() {
         return text(ERROR);
     }
-}
 
+    private void submitForm() {
+        ((JavascriptExecutor) driver).executeScript(
+                "document.querySelector('form[aria-label=\"Login\"]').requestSubmit();"
+        );
+    }
+}
