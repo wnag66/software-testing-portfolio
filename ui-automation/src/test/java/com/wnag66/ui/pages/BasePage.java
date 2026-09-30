@@ -28,7 +28,8 @@ public abstract class BasePage {
     }
 
     protected void click(By locator) {
-        clickable(locator).click();
+        WebElement element = clickable(locator);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
     }
 
     protected void type(By locator, String value) {
