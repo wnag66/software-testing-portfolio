@@ -34,6 +34,35 @@ jobs:
             api-testlab/target/allure-results
             api-testlab/target/site/allure-maven-plugin
 
+  ai-agent-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: ai-agent-evaluation/requirements-test.txt
+      - name: Install test dependencies
+        run: python -m pip install -r ai-agent-evaluation/requirements-test.txt
+      - name: Run Agent evaluation tests
+        working-directory: ai-agent-evaluation
+        env:
+          PYTHONPATH: src
+        run: python -m pytest
+      - name: Generate evaluation report
+        working-directory: ai-agent-evaluation
+        env:
+          PYTHONPATH: src
+        run: python -m agent_eval.cli
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ai-agent-evaluation-results
+          path: |
+            ai-agent-evaluation/reports
+            ai-agent-evaluation/.pytest_cache
+
   ui-tests:
     runs-on: ubuntu-latest
     steps:

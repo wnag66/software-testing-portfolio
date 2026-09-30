@@ -4,6 +4,10 @@ target/
 *.iml
 *.log
 *.jtl
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
 allure-results/
 allure-report/
 reports/generated/

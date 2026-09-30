@@ -354,6 +354,316 @@ def create_resume():
     c.save()
 
 
+def create_resume_star():
+    register_fonts()
+    c = canvas.Canvas(str(RESUME_PATH), pagesize=A4)
+    c.setTitle("刘亚 - AI 测试开发实习生")
+    c.setAuthor("刘亚")
+    c.setSubject("AI 测试开发实习简历")
+
+    top = 52
+    draw_text(c, "刘亚", 42, top, "DengXian-Bold", 22, NAVY)
+    draw_text(c, "求职意向：AI 测试开发实习生（2027 届）", 42, top + 25, "DengXian-Bold", 11, TEAL)
+    draw_text(c, "电话：17280984481  |  邮箱：18883314058@163.com", 42, top + 43, "DengXian", 8.4, TEXT)
+    draw_text(c, "可实习：每周 5 天，稳定实习 5-6 个月，一周内到岗", 42, top + 56, "DengXian", 8.4, TEXT)
+    drawer_y = A4[1] - 116
+    c.setStrokeColor(TEAL)
+    c.setLineWidth(1.2)
+    c.line(42, drawer_y, A4[0] - 42, drawer_y)
+
+    top = 136
+    top = start_section(c, "教育背景", top)
+    draw_text(c, "浙江师范大学", 42, top + 1, "DengXian-Bold", 9.3, TEXT)
+    draw_text(c, "计算机科学与技术 | 本科", 118, top + 1, "DengXian", 9.1, TEXT)
+    draw_text(c, "2023.09-2027.06", 485, top + 1, "DengXian", 8.6, TEXT)
+    top += 13
+    top = draw_labeled_paragraph(
+        c,
+        "相关课程：",
+        "数据结构、数据库、Java 程序设计、操作系统、软件工程",
+        42,
+        top,
+        511,
+        8.4,
+        10.8,
+    )
+
+    top += 4
+    top = start_section(c, "专业技能", top)
+    top = draw_labeled_paragraph(
+        c,
+        "AI 测试开发：",
+        "LLM/Agent 评测、Prompt Injection 与安全拒答、工具调用正确性、幻觉防护、答案关键词校验、P95 延迟阈值。",
+        42,
+        top,
+        511,
+        8.2,
+        10.7,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "Python 自动化：",
+        "Python、Pytest、Dataclass、JSON 数据驱动、评测报告生成；Java、JUnit 5、REST Assured、Selenium。",
+        42,
+        top,
+        511,
+        8.2,
+        10.7,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "测试与工具：",
+        "黑盒测试、等价类、边界值、场景法、接口测试、UI 自动化、性能测试、Allure、Postman、JMeter、SQL。",
+        42,
+        top,
+        511,
+        8.2,
+        10.7,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "工程与 CI：",
+        "Git、GitHub Actions、Linux、Docker、Spring Boot；能够将测试框架接入持续集成流水线。",
+        42,
+        top,
+        511,
+        8.2,
+        10.7,
+    )
+
+    top += 4
+    top = start_section(c, "测试开发项目（STAR）", top)
+
+    draw_text(c, "AgentEval - LLM/Agent 评测框架", 42, top + 1, "DengXian-Bold", 9.9, NAVY)
+    draw_text(c, "个人测试开发项目", 430, top + 1, "DengXian", 8.2, SECONDARY)
+    top += 12
+    top = draw_paragraph(
+        c,
+        "技术栈：Python / Pytest / Dataclass / JSON / GitHub Actions",
+        52,
+        top,
+        501,
+        "DengXian",
+        7.9,
+        10.2,
+        SECONDARY,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "背景：",
+        "LLM/Agent 的输出具有不确定性，传统断言很难覆盖工具选择错误、Prompt 注入和幻觉风险。",
+        42,
+        top,
+        511,
+        8.1,
+        10.6,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "职责：",
+        "负责评测框架与用例模型设计，定义任务成功、工具调用、安全拒答、幻觉防护和 P95 延迟指标。",
+        42,
+        top,
+        511,
+        8.1,
+        10.6,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "行动：",
+        "实现规则 Agent、工具层、评测器和 JSON/Markdown 报告模块；构建 12 条评测样例与 10 条 Pytest 用例，校验工具调用顺序、答案关键词、禁用词、异常权限和响应时间。",
+        42,
+        top,
+        511,
+        8.1,
+        10.6,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "结果：",
+        "12/12 评测通过，工具调用准确率 100%，安全通过率 100%，P95 0.3452 ms，并接入 GitHub Actions 持续回归。",
+        42,
+        top,
+        511,
+        8.1,
+        10.6,
+    )
+    link_y = A4[1] - top
+    c.setFont("DengXian", 7.8)
+    c.setFillColor(TEAL)
+    c.drawString(52, link_y, "项目仓库：github.com/wnag66/software-testing-portfolio")
+    c.linkURL(
+        "https://github.com/wnag66/software-testing-portfolio",
+        (52, link_y - 2, 340, link_y + 9),
+        relative=0,
+    )
+    top += 11
+
+    top += 4
+    draw_text(c, "设备与订单管理 API 功能及性能测试", 42, top + 1, "DengXian-Bold", 9.9, NAVY)
+    draw_text(c, "个人测试项目", 450, top + 1, "DengXian", 8.2, SECONDARY)
+    top += 12
+    top = draw_paragraph(
+        c,
+        "技术栈：Java / Spring Boot / JUnit 5 / REST Assured / Postman / H2 / JMeter / Allure / GitHub Actions",
+        52,
+        top,
+        501,
+        "DengXian",
+        7.9,
+        10.2,
+        SECONDARY,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "背景：",
+        "设备与订单服务同时涉及状态流转、时间边界、重复请求、分页和数据一致性，质量问题会直接影响交付。",
+        42,
+        top,
+        511,
+        8.1,
+        10.6,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "职责：",
+        "负责需求拆解、测试方案、接口自动化、缺陷复现、性能场景设计和回归验证。",
+        42,
+        top,
+        511,
+        8.1,
+        10.6,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "行动：",
+        "自建 4 个接口的测试靶场，设计 20 条手工用例和 8 条 REST Assured 自动化用例；使用 Postman 探索接口，通过 H2 SQL 校验数据一致性，用 JMeter 编排 1/20/50 并发场景。",
+        42,
+        top,
+        511,
+        8.1,
+        10.6,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "结果：",
+        "修复后 8/8 自动化通过，关闭 5 个缺陷；50 并发完成 396,024 次请求，平均 13.83 ms，P95 70 ms，错误率 0%。",
+        42,
+        top,
+        511,
+        8.1,
+        10.6,
+    )
+
+    top += 4
+    draw_text(c, "SauceDemo 电商流程 UI 自动化测试", 42, top + 1, "DengXian-Bold", 9.9, NAVY)
+    draw_text(c, "个人测试项目", 450, top + 1, "DengXian", 8.2, SECONDARY)
+    top += 12
+    top = draw_paragraph(
+        c,
+        "技术栈：Java / Selenium / JUnit 5 / Page Object Model / Allure / GitHub Actions",
+        52,
+        top,
+        501,
+        "DengXian",
+        7.9,
+        10.2,
+        SECONDARY,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "背景：",
+        "电商用户流程跨多个页面，手工回归成本高，需要稳定、可重复且能保留失败证据的自动化方案。",
+        42,
+        top,
+        511,
+        8.1,
+        10.6,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "职责：",
+        "负责页面对象分层、稳定定位器、显式等待策略和失败证据采集。",
+        42,
+        top,
+        511,
+        8.1,
+        10.6,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "行动：",
+        "编写 10 条 UI 自动化用例，覆盖登录、锁定用户、商品排序、购物车、结算校验和退出；在 Chrome Headless 中执行并接入 Allure。",
+        42,
+        top,
+        511,
+        8.1,
+        10.6,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "结果：",
+        "自动化回归 10/10 通过，失败时自动记录截图和页面源码，GitHub Actions 持续执行回归。",
+        42,
+        top,
+        511,
+        8.1,
+        10.6,
+    )
+
+    top += 4
+    top = start_section(c, "相关开发与实习经历", top)
+    top = draw_labeled_paragraph(
+        c,
+        "DocMind RAG：",
+        "参与文档上传、切分、向量检索和 LLM 问答链路开发，理解 RAG 评测中的召回、上下文和幻觉风险。",
+        42,
+        top,
+        511,
+        8.2,
+        10.7,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "商品秒杀系统：",
+        "完成 Redis 原子扣减、RabbitMQ 异步削峰和幂等处理，参与接口自测、异常校验和回归验证。",
+        42,
+        top,
+        511,
+        8.2,
+        10.7,
+    )
+    top = draw_labeled_paragraph(
+        c,
+        "中国移动营业厅实习：",
+        "参与前台业务受理、客户信息核验和订单查询，熟悉需求受理、处理、回访的闭环流程。",
+        42,
+        top,
+        511,
+        8.2,
+        10.7,
+    )
+
+    top += 4
+    top = start_section(c, "自我评价", top)
+    top = draw_paragraph(
+        c,
+        "以 Python 为主要测试开发语言，能够把测试需求沉淀为可执行框架并接入 CI；具备 Java/Spring Boot 和 RAG 开发基础，"
+        "理解 AI 产品在工具调用、幻觉、安全和延迟方面的测试重点。认真细致，沟通配合意识强，希望在 AI 测试开发方向长期发展。",
+        42,
+        top,
+        511,
+        "DengXian",
+        8.3,
+        10.9,
+    )
+
+    if top > 812:
+        raise RuntimeError(f"STAR resume content overflows page: bottom={top:.1f}")
+    c.showPage()
+    c.save()
+
+
 def report_styles():
     styles = getSampleStyleSheet()
     return {
@@ -720,7 +1030,7 @@ def create_report():
 
 
 if __name__ == "__main__":
-    create_resume()
+    create_resume_star()
     create_report()
     print(f"Created: {RESUME_PATH}")
     print(f"Created: {REPORT_PATH}")

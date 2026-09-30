@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/wnag66/software-testing-portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/wnag66/software-testing-portfolio/actions/workflows/ci.yml)
 
-这是一个面向通用软件测试实习岗位的个人测试实践仓库。项目包含 API 功能与性能测试、SauceDemo Web UI 自动化测试、缺陷复现与回归、Allure 报告以及 GitHub Actions 持续集成。
+这是一个面向通用软件测试和 AI 测试开发实习岗位的个人测试实践仓库。项目包含 LLM/Agent 评测、API 功能与性能测试、SauceDemo Web UI 自动化测试、缺陷复现与回归、Allure 报告以及 GitHub Actions 持续集成。
 
 仓库中的被测系统是自建 API 靶场，缺陷版本用于演示发现、复现、修复和回归过程，不代表任何企业的真实生产系统。
 
@@ -10,6 +10,7 @@
 
 | Project | Scope | Execution | Result |
 | --- | --- | --- | --- |
+| AgentEval | 12 evaluation cases, 10 Pytest tests | Python + Pytest | 12/12 passed |
 | Device and Order API | 4 API, 20 manual cases, 8 automated tests | REST Assured + JUnit 5 | 8/8 passed |
 | SauceDemo UI | Login, sorting, cart, checkout, logout | Selenium + JUnit 5 + POM | 10/10 passed |
 | Defect lifecycle | 5 defects in API behavior | v0.1-buggy -> v1.0-fixed | 5/5 reproduced, 5/5 regressed |
@@ -20,6 +21,7 @@ Performance results were collected on a local single-node Spring Boot and H2 tes
 ## Repository Layout
 
 ```text
+ai-agent-evaluation/ Python LLM/Agent evaluation harness
 api-testlab/       Spring Boot API laboratory and REST Assured tests
 ui-automation/     Selenium Page Object automation for SauceDemo
 postman/           Postman collection for API exploration
@@ -29,6 +31,16 @@ scripts/           PDF generation script
 ```
 
 ## Run Locally
+
+Agent evaluation:
+
+```powershell
+cd ai-agent-evaluation
+python -m pip install -r requirements-test.txt
+$env:PYTHONPATH="src"
+python -m pytest
+python -m agent_eval.cli
+```
 
 API regression:
 
@@ -62,4 +74,3 @@ The JMeter script runs smoke, baseline, and load scenarios, then writes HTML das
 - API test plan: `docs/test-plan.md`
 - Manual cases: `docs/test-cases.md`
 - Performance summary: `docs/performance-results.md`
-
