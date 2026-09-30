@@ -42,6 +42,9 @@ public abstract class BaseTest {
         } catch (TimeoutException exception) {
             ((JavascriptExecutor) driver).executeScript("window.stop();");
         }
+        new WebDriverWait(driver, Duration.ofSeconds(30)).until(webDriver ->
+                "complete".equals(((JavascriptExecutor) webDriver).executeScript("return document.readyState"))
+        );
     }
 
     @AfterAll
