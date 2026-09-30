@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: device-order-api-testlab
+  datasource:
+    url: jdbc:h2:mem:testlab;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  sql:
+    init:
+      mode: always
+server:
+  port: 8080
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+

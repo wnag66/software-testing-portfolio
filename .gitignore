@@ -1,0 +1,13 @@
+target/
+.idea/
+.vscode/
+*.iml
+*.log
+*.jtl
+*.csv
+allure-results/
+allure-report/
+reports/generated/
+api-testlab/jmeter/reports/
+ui-automation/screenshots/
+
