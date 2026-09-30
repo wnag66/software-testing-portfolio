@@ -3,6 +3,7 @@ package com.wnag66.ui.support;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.PageLoadStrategy;
 
 import java.time.Duration;
 
@@ -20,11 +21,12 @@ public final class DriverFactory {
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--lang=en-US");
+        options.setPageLoadStrategy(PageLoadStrategy.EAGER);
         if (Boolean.parseBoolean(System.getProperty("headless", "true"))) {
             options.addArguments("--headless=new");
         }
         WebDriver driver = new ChromeDriver(options);
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(60));
         driver.manage().timeouts().implicitlyWait(Duration.ZERO);
         DRIVER.set(driver);
     }
@@ -49,4 +51,3 @@ public final class DriverFactory {
         }
     }
 }
-

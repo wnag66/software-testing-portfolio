@@ -35,6 +35,9 @@ public class DeviceService {
         if (!VALID_STATUSES.contains(status)) {
             throw new InvalidRequestException("status is not supported");
         }
+        if (request.latencyMs() < 0) {
+            throw new InvalidRequestException("latencyMs must be greater than or equal to 0");
+        }
         if (!deviceRepository.findById(deviceId).isPresent()) {
             throw new ResourceNotFoundException("Device " + deviceId + " was not found");
         }
@@ -48,4 +51,3 @@ public class DeviceService {
         }
     }
 }
-

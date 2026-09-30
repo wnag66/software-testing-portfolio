@@ -32,7 +32,7 @@ public class InventoryPage extends BasePage {
     }
 
     public String firstProductName() {
-        return visible(SORT);
+        return text(SORT);
     }
 
     public String firstProductText() {
@@ -68,4 +68,3 @@ public class InventoryPage extends BasePage {
         return new LoginPage(driver);
     }
 }
-

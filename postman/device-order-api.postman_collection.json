@@ -1,0 +1,245 @@
+{
+  "info": {
+    "_postman_id": "d9f4dd43-3ca9-4b3e-aa45-46e28a801b7f",
+    "name": "Device and Order API Test Lab",
+    "description": "Functional and negative API checks for the testing portfolio.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Device status",
+      "item": [
+        {
+          "name": "Existing device",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/devices/D001/status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('device matches', () => pm.expect(pm.response.json().deviceId).to.eql('D001'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unknown device",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/devices/D999/status"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('error code is NOT_FOUND', () => pm.expect(pm.response.json().code).to.eql('NOT_FOUND'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Heartbeat",
+      "item": [
+        {
+          "name": "Valid heartbeat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ONLINE\",\n  \"timestamp\": \"2026-09-30T10:00:00Z\",\n  \"latencyMs\": 90\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/devices/D001/heartbeat"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('latency was updated', () => pm.expect(pm.response.json().latencyMs).to.eql(90));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Negative latency",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ONLINE\",\n  \"timestamp\": \"2026-09-30T10:00:00Z\",\n  \"latencyMs\": -1\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/devices/D001/heartbeat"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error code is INVALID_REQUEST', () => pm.expect(pm.response.json().code).to.eql('INVALID_REQUEST'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Order validation",
+      "item": [
+        {
+          "name": "Valid order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"locationCode\": \"L001\",\n  \"gateId\": \"G001\",\n  \"validatedAt\": \"2026-09-30T10:00:00Z\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/orders/O1001/validate"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('order is accepted', () => pm.expect(pm.response.json().accepted).to.eql(true));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Expiry boundary",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"locationCode\": \"L001\",\n  \"gateId\": \"G001\",\n  \"validatedAt\": \"2099-12-31T15:59:59Z\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/orders/O1001/validate"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('order is expired', () => pm.expect(pm.response.json().reason).to.eql('EXPIRED'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Event pagination",
+      "item": [
+        {
+          "name": "High severity",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/events?severity=HIGH&page=1&size=10"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('only HIGH severity is returned', () => pm.expect(pm.response.json().items.every(item => item.severity === 'HIGH')).to.eql(true));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Zero page size",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/events?page=1&size=0"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error code is INVALID_REQUEST', () => pm.expect(pm.response.json().code).to.eql('INVALID_REQUEST'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

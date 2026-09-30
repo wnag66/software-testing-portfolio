@@ -32,6 +32,7 @@
         <selenium.version>4.49.0</selenium.version>
         <junit.version>5.14.4</junit.version>
         <allure.version>2.35.5</allure.version>
+        <allure.report.version>2.46.1</allure.report.version>
         <allure-maven.version>3.1.0</allure-maven.version>
         <surefire.version>3.5.4</surefire.version>
         <compiler-plugin.version>3.14.1</compiler-plugin.version>

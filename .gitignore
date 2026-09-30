@@ -4,10 +4,9 @@ target/
 *.iml
 *.log
 *.jtl
-*.csv
 allure-results/
 allure-report/
 reports/generated/
 api-testlab/jmeter/reports/
+api-testlab/.allure/
 ui-automation/screenshots/
-

@@ -32,6 +32,9 @@ public class EventService {
         if (page < 1) {
             throw new InvalidRequestException("page must be greater than or equal to 1");
         }
+        if (size < 1 || size > 50) {
+            throw new InvalidRequestException("size must be between 1 and 50");
+        }
         String normalizedType = normalize(type);
         String normalizedSeverity = normalize(severity);
         validateAllowed("type", normalizedType, TYPES);
@@ -45,7 +48,7 @@ public class EventService {
                 offset
         );
         long total = eventRepository.count(normalizedType, normalizedSeverity, locationCode);
-        long pageCount = total / size;
+        long pageCount = (total + size - 1) / size;
         return new PageResponse<>(items, page, size, total, pageCount);
     }
 
@@ -59,4 +62,3 @@ public class EventService {
         }
     }
 }
-

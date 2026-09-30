@@ -1,0 +1,133 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+      - name: Run API regression tests
+        run: mvn -B -pl api-testlab test
+      - name: Generate API Allure report
+        shell: bash
+        run: |
+          curl -L --retry 3 -o /tmp/allure.zip \
+            https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.46.1/allure-commandline-2.46.1.zip
+          unzip -q /tmp/allure.zip -d /tmp
+          /tmp/allure-2.46.1/bin/allure generate api-testlab/target/allure-results \
+            -o api-testlab/target/site/allure-maven-plugin --clean
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-test-results
+          path: |
+            api-testlab/target/surefire-reports
+            api-testlab/target/allure-results
+            api-testlab/target/site/allure-maven-plugin
+
+  ui-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+      - uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: "154.0.8037.92"
+      - name: Install matching ChromeDriver
+        shell: bash
+        run: |
+          curl -L --retry 3 -o /tmp/chromedriver.zip \
+            https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.92/linux64/chromedriver-linux64.zip
+          unzip -q /tmp/chromedriver.zip -d /tmp
+          chmod +x /tmp/chromedriver-linux64/chromedriver
+      - name: Run UI regression tests
+        run: >-
+          mvn -B -pl ui-automation test
+          -Dheadless=true
+          -Dwebdriver.chrome.driver=/tmp/chromedriver-linux64/chromedriver
+      - name: Generate UI Allure report
+        if: always()
+        shell: bash
+        run: |
+          curl -L --retry 3 -o /tmp/allure.zip \
+            https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.46.1/allure-commandline-2.46.1.zip
+          unzip -q /tmp/allure.zip -d /tmp
+          if [ -d ui-automation/target/allure-results ]; then
+            /tmp/allure-2.46.1/bin/allure generate ui-automation/target/allure-results \
+              -o ui-automation/target/site/allure-maven-plugin --clean
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-test-results
+          path: |
+            ui-automation/target/surefire-reports
+            ui-automation/target/allure-results
+            ui-automation/target/site/allure-maven-plugin
+
+  performance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+      - name: Download JMeter
+        shell: bash
+        run: |
+          curl -L --retry 3 -o /tmp/jmeter.tgz \
+            https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.tgz
+          tar -xzf /tmp/jmeter.tgz -C /tmp
+          chmod +x /tmp/apache-jmeter-5.6.3/bin/jmeter
+      - name: Build API test lab
+        run: mvn -B -pl api-testlab package -DskipTests
+      - name: Run performance scenarios
+        shell: bash
+        run: |
+          java -jar api-testlab/target/api-testlab-1.0.0.jar --server.port=18080 >/tmp/api.log 2>&1 &
+          APP_PID=$!
+          trap "kill $APP_PID || true" EXIT
+          for attempt in {1..60}; do
+            if curl -fsS http://localhost:18080/actuator/health >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          run_scenario() {
+            name=$1
+            threads=$2
+            ramp=$3
+            duration=$4
+            rm -rf "api-testlab/jmeter/reports/$name"
+            mkdir -p "api-testlab/jmeter/reports/$name"
+            /tmp/apache-jmeter-5.6.3/bin/jmeter -n \
+              -t api-testlab/jmeter/device-order-api.jmx \
+              -Jhost=localhost -Jport=18080 \
+              -Jthreads="$threads" -JrampUp="$ramp" -Jduration="$duration" \
+              -l "api-testlab/jmeter/reports/$name/results.jtl" \
+              -e -o "api-testlab/jmeter/reports/$name/html"
+          }
+          run_scenario smoke 1 1 10
+          run_scenario baseline 20 10 60
+          run_scenario load 50 20 120
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jmeter-results
+          path: api-testlab/jmeter/reports
+
