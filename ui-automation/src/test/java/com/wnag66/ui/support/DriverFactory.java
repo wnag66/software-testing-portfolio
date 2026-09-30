@@ -22,6 +22,10 @@ public final class DriverFactory {
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--lang=en-US");
         options.setPageLoadStrategy(PageLoadStrategy.EAGER);
+        String browserBinary = System.getProperty("chrome.binary");
+        if (browserBinary != null && !browserBinary.isBlank()) {
+            options.setBinary(browserBinary);
+        }
         if (Boolean.parseBoolean(System.getProperty("headless", "true"))) {
             options.addArguments("--headless=new");
         }

@@ -43,20 +43,22 @@ jobs:
           distribution: temurin
           java-version: "17"
           cache: maven
-      - uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: "154.0.8037.92"
-      - name: Install matching ChromeDriver
+      - name: Install matching Chrome and ChromeDriver
         shell: bash
         run: |
+          curl -L --retry 3 -o /tmp/chrome.zip \
+            https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.92/linux64/chrome-linux64.zip
           curl -L --retry 3 -o /tmp/chromedriver.zip \
             https://storage.googleapis.com/chrome-for-testing-public/154.0.8037.92/linux64/chromedriver-linux64.zip
+          unzip -q /tmp/chrome.zip -d /tmp
           unzip -q /tmp/chromedriver.zip -d /tmp
+          chmod +x /tmp/chrome-linux64/chrome
           chmod +x /tmp/chromedriver-linux64/chromedriver
       - name: Run UI regression tests
         run: >-
           mvn -B -pl ui-automation test
           -Dheadless=true
+          -Dchrome.binary=/tmp/chrome-linux64/chrome
           -Dwebdriver.chrome.driver=/tmp/chromedriver-linux64/chromedriver
       - name: Generate UI Allure report
         if: always()
@@ -130,4 +132,3 @@ jobs:
         with:
           name: jmeter-results
           path: api-testlab/jmeter/reports
-
