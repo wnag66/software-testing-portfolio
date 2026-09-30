@@ -27,7 +27,7 @@ OUTPUT_ROOT = REPO_ROOT.parent
 REPORT_DIR = REPO_ROOT / "reports"
 REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
-RESUME_PATH = OUTPUT_ROOT / "刘亚-AI测试开发实习生-2027届.pdf"
+RESUME_PATH = OUTPUT_ROOT / "刘亚-AI测试开发实习生-2027届-带照片.pdf"
 REPORT_PATH = OUTPUT_ROOT / "软件测试实践项目综合报告.pdf"
 REPORT_COPY_PATH = REPORT_DIR / "软件测试实践项目综合报告.pdf"
 
@@ -372,10 +372,10 @@ def create_resume_star(headshot_path: str | Path | None = None):
         headshot = Path(headshot_path)
         if not headshot.exists():
             raise FileNotFoundError(f"Headshot not found: {headshot}")
-        photo_width = 48.0
-        photo_height = 67.25424
+        photo_width = 60.0
+        photo_height = 84.0678
         photo_x = 553.0 - photo_width
-        photo_top = 52.0
+        photo_top = 38.0
         c.drawImage(
             ImageReader(str(headshot)),
             photo_x,
