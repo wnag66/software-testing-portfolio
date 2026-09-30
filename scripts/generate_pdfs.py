@@ -1,10 +1,12 @@
 import re
+import argparse
 from pathlib import Path
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.utils import ImageReader
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -354,7 +356,7 @@ def create_resume():
     c.save()
 
 
-def create_resume_star():
+def create_resume_star(headshot_path: str | Path | None = None):
     register_fonts()
     c = canvas.Canvas(str(RESUME_PATH), pagesize=A4)
     c.setTitle("刘亚 - AI 测试开发实习生")
@@ -366,6 +368,24 @@ def create_resume_star():
     draw_text(c, "求职意向：AI 测试开发实习生（2027 届）", 42, top + 25, "DengXian-Bold", 11, TEAL)
     draw_text(c, "电话：17280984481  |  邮箱：18883314058@163.com", 42, top + 43, "DengXian", 8.4, TEXT)
     draw_text(c, "可实习：每周 5 天，稳定实习 5-6 个月，一周内到岗", 42, top + 56, "DengXian", 8.4, TEXT)
+    if headshot_path:
+        headshot = Path(headshot_path)
+        if not headshot.exists():
+            raise FileNotFoundError(f"Headshot not found: {headshot}")
+        photo_x = 504.2756
+        photo_top = 69.37856
+        photo_width = 38.0
+        photo_height = 53.24294
+        c.drawImage(
+            ImageReader(str(headshot)),
+            photo_x,
+            A4[1] - photo_top - photo_height,
+            width=photo_width,
+            height=photo_height,
+            preserveAspectRatio=True,
+            anchor="c",
+            mask="auto",
+        )
     drawer_y = A4[1] - 116
     c.setStrokeColor(TEAL)
     c.setLineWidth(1.2)
@@ -1030,7 +1050,10 @@ def create_report():
 
 
 if __name__ == "__main__":
-    create_resume_star()
+    parser = argparse.ArgumentParser(description="Generate resume and project report PDFs")
+    parser.add_argument("--headshot", default=None, help="Optional headshot image path")
+    arguments = parser.parse_args()
+    create_resume_star(arguments.headshot)
     create_report()
     print(f"Created: {RESUME_PATH}")
     print(f"Created: {REPORT_PATH}")
