@@ -26,7 +26,7 @@ public class LoginPage extends BasePage {
         type(PASSWORD, password);
         submitForm();
         waitForUrl("inventory.html");
-        return new InventoryPage(driver);
+        return new InventoryPage(driver).waitUntilReady();
     }
 
     public LoginPage submitInvalidCredentials(String username, String password) {

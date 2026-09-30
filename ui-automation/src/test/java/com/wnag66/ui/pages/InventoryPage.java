@@ -1,6 +1,7 @@
 package com.wnag66.ui.pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -22,6 +23,23 @@ public class InventoryPage extends BasePage {
 
     public boolean isLoaded() {
         return "Products".equals(text(TITLE));
+    }
+
+    public InventoryPage waitUntilReady() {
+        visible(TITLE);
+        wait.until(webDriver ->
+                Boolean.TRUE.equals(((JavascriptExecutor) webDriver).executeScript("""
+                        const element = document.querySelector("[data-test='add-to-cart-sauce-labs-backpack']");
+                        return element && Object.keys(element).some(key => key.startsWith("__reactProps$"));
+                        """))
+        );
+        wait.until(webDriver ->
+                Boolean.TRUE.equals(((JavascriptExecutor) webDriver).executeScript("""
+                        const element = document.querySelector("#react-burger-menu-btn");
+                        return element && Object.keys(element).some(key => key.startsWith("__reactProps$"));
+                        """))
+        );
+        return this;
     }
 
     public InventoryPage sortBy(String value) {
