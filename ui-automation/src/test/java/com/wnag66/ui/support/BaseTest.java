@@ -45,6 +45,12 @@ public abstract class BaseTest {
         new WebDriverWait(driver, Duration.ofSeconds(30)).until(webDriver ->
                 "complete".equals(((JavascriptExecutor) webDriver).executeScript("return document.readyState"))
         );
+        new WebDriverWait(driver, Duration.ofSeconds(30)).until(webDriver ->
+                Boolean.TRUE.equals(((JavascriptExecutor) webDriver).executeScript("""
+                        const element = document.querySelector("[data-test='login-button']");
+                        return element && Object.keys(element).some(key => key.startsWith("__reactProps$"));
+                        """))
+        );
     }
 
     @AfterAll
